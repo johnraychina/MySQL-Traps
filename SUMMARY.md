@@ -1,5 +1,5 @@
 # Summary
 
 * [MySQL 分页最佳实践](README.md)
-* [First Chapter](chapter1.md)
+* [MySQL last\_insert\_id生成序列号](chapter1.md)
 
