@@ -1,12 +1,12 @@
-最佳实践：order by和where共用索引，会比不共用快很多。注意order by中要带唯一键值，否则可能不同页的数据会重复。
+最佳实践：
 
+limit分页要加order by， 注意order by中要带唯一键值，否则可能不同页的数据会重复。 
 
+order by和where共用索引，会比不共用快很多。
 
 
 
 [http:\/\/dev.mysql.com\/doc\/refman\/5.7\/en\/limit-optimization.html](http://dev.mysql.com/doc/refman/5.7/en/limit-optimization.html)
-
-
 
 **MySQL有时候会对带limit且不带having的查询进行优化：**
 
@@ -20,33 +20,21 @@
 * limit 0直接返回空集。主要用于检测表是否存在，获取表结构信息。
 * temporary table临时表优化：用limit计算需要的空间。
 
-
-
-
-
 如果order by中的列有多行相同的值，则这些相同值的行之间的排序是任意的\(nondeterministic \)。
 
 limit会影响执行计划，所以order by的查询，带limit和不带limit返回的结果的排序可能不同。
 
 如果你要求order by加不加limit都是一样的排序，你可以加上其他列使得排序是确定的\(deterministic\).
 
-
-
-
-
 优化器会处理这样的sql：
 
-SELECT ... FROM _**single\_table**_ ... ORDER BY _**non\_index\_column**_ \[DESC\] LIMIT \[_**M**_,\]_**N**_;
+SELECT ... FROM **_single\_table_** ... ORDER BY **_non\_index\_column_** \[DESC\] LIMIT \[**_M_**,\]**_N_**;
 
 根据mysql的内存排序缓冲区[sort\_buffer\_size](http://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_sort_buffer_size)大小确定如何优化：
 
 1、如果缓冲区足够大，则把查询结果放到队列里面排序。
 
 2、否则将选定的\[M\]+N行数据存入merge file（临时存放中间结果），对文件排序后，返回M开始的N行数据。
-
-
-
-
 
 两种方式的代价不同：
 
@@ -55,6 +43,4 @@ SELECT ... FROM _**single\_table**_ ... ORDER BY _**non\_index\_column**_ \[DESC
 2、文件排序比较消耗I\/O
 
 针对不同的N行和行的大小，MySQL会自己权衡使用哪一种方式优化。
-
-
 
