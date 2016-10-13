@@ -10,8 +10,8 @@ order by和where共用索引，会比不共用快很多。
 
 **因为优化，会产生一个现象：order by带limit与不带limit会返回不同的顺序：**
 
-* **limit+distinct优化：如果MySQL或再找到对应条数记录后马上停止查询。**
-* **limit+group by优化：group by如果走索引，直接对索引做分组计算，找到对应条数就停止计算。**
+* limit+distinct优化：如果MySQL或再找到对应条数记录后马上停止查询。
+* limit+group by优化：group by如果走索引，直接对索引做分组计算，找到对应条数就停止计算。
 * limit 0直接返回空集。主要用于检测表是否存在，获取表结构信息。
 * temporary table临时表优化：用limit计算需要的空间。
 
