@@ -1,3 +1,11 @@
+---
+plugins:
+  - theme-api
+pluginsConfig:
+  theme-api:
+    theme: dark
+---
+
 # 为什么要用last\_insert\_id来生成id序列号？
 
 ## 直接这生成序列号：
