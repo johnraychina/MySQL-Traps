@@ -8,7 +8,7 @@ order by和where共用索引，会比不共用快很多。
 * 如果用limit只查询少数几行，有时候会走索引，但通常会优先做全表扫描。
 * 如果用limit+order by，MYSQL找到对应条数的排序结果集后结束查询，不会对整个where结果集排序。如果order by走了索引就会很快，否则用filesort，会先把where大部分或全部结果集查出来排序，然后取对应条数。
 
-**行为会产生一个现象：order by带limit与不带limit会返回不同的顺序：**
+**因为优化，会产生一个现象：order by带limit与不带limit会返回不同的顺序：**
 
 * **limit+distinct优化：如果MySQL或再找到对应条数记录后马上停止查询。**
 * **limit+group by优化：group by如果走索引，直接对索引做分组计算，找到对应条数就停止计算。**
