@@ -1,10 +1,7 @@
 最佳实践：
 
 limit分页要加order by， 注意order by中要带唯一键值，否则可能不同页的数据会重复。
-
 order by和where共用索引，会比不共用快很多。
-
-
 
 **MySQL有时候会对带limit且不带having的查询进行优化：**
 
@@ -28,7 +25,7 @@ limit会影响执行计划，所以order by的查询，带limit和不带limit返
 
 SELECT ... FROM _**single\_table**_ ... ORDER BY _**non\_index\_column**_ \[DESC\] LIMIT \[_**M**_,\]_**N**_;
 
-根据mysql的内存排序缓冲区[sort\_buffer\_size](http://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_sort_buffer_size)大小确定如何优化：
+根据mysql的内存排序缓冲区[sort\_buffer\_size]大小确定如何优化：
 
 1、如果缓冲区足够大，则把查询结果放到队列里面排序。
 
