@@ -1,10 +1,3 @@
----
-plugins:
-  - theme-api
-pluginsConfig:
-  theme-api:
-    theme: dark
----
 
 * mysql数据量超过3千万性能猛降
 * 删除历史partition后，性能猛增10倍：60多秒&gt;&gt;5秒不到
