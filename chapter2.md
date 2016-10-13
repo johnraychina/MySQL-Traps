@@ -4,7 +4,7 @@ limit分页要加order by， 注意order by中要带唯一键值，否则可能�
 
 order by和where共用索引，会比不共用快很多。
 
-[http:\/\/dev.mysql.com\/doc\/refman\/5.7\/en\/limit-optimization.html](http://dev.mysql.com/doc/refman/5.7/en/limit-optimization.html)
+
 
 **MySQL有时候会对带limit且不带having的查询进行优化：**
 
