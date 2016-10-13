@@ -34,84 +34,51 @@ select last_insert_id() from batch_job_seq;
 
  if (this.maxId == this.nextId) {
 
- /*
+     /*
+     * Need to use straight JDBC code because we need to make sure that the insert and select
+     * are performed on the same connection (otherwise we can't be sure that last_insert_id()
+     * returned the correct value)
+     */
 
- * Need to use straight JDBC code because we need to make sure that the insert and select
+     Connection con = DataSourceUtils.getConnection(getDataSource());
+     Statement stmt = null;
+     try {
 
- * are performed on the same connection (otherwise we can't be sure that last_insert_id()
+         stmt = con.createStatement();
+         DataSourceUtils.applyTransactionTimeout(stmt, getDataSource());
 
- * returned the correct value)
+         // Increment the sequence column...
+         String columnName = getColumnName();
+         stmt.executeUpdate("update "+ getIncrementerName() + " set " + columnName +
+             " = last_insert_id(" + columnName + " + " + getCacheSize() + ")");
 
- */
+         // Retrieve the new max of the sequence column...
+         ResultSet rs = stmt.executeQuery(VALUE_SQL);
+         try {
+             if (!rs.next()) {
+                 throw new DataAccessResourceFailureException("last_insert_id() failed after executing an update");
+         }
+         this.maxId = rs.getLong(1);
+         }
+         finally {
+             JdbcUtils.closeResultSet(rs);
+         }
 
- Connection con = DataSourceUtils.getConnection(getDataSource());
+         this.nextId = this.maxId - getCacheSize() + 1;
+     }
+     catch (SQLException ex) {
+         throw new DataAccessResourceFailureException("Could not obtain last_insert_id()", ex);
+     }
 
- Statement stmt = null;
-
- try {
-
- stmt = con.createStatement();
-
- DataSourceUtils.applyTransactionTimeout(stmt, getDataSource());
-
- // Increment the sequence column...
-
- String columnName = getColumnName();
-
- stmt.executeUpdate("update "+ getIncrementerName() + " set " + columnName +
-
- " = last_insert_id(" + columnName + " + " + getCacheSize() + ")");
-
- // Retrieve the new max of the sequence column...
-
- ResultSet rs = stmt.executeQuery(VALUE_SQL);
-
- try {
-
- if (!rs.next()) {
-
- throw new DataAccessResourceFailureException("last_insert_id() failed after executing an update");
-
+     finally {
+         JdbcUtils.closeStatement(stmt);
+         DataSourceUtils.releaseConnection(con, getDataSource());
+     }
  }
-
- this.maxId = rs.getLong(1);
-
- }
-
- finally {
-
- JdbcUtils.closeResultSet(rs);
-
- }
-
- this.nextId = this.maxId - getCacheSize() + 1;
-
- }
-
- catch (SQLException ex) {
-
- throw new DataAccessResourceFailureException("Could not obtain last_insert_id()", ex);
-
- }
-
- finally {
-
- JdbcUtils.closeStatement(stmt);
-
- DataSourceUtils.releaseConnection(con, getDataSource());
-
- }
-
- }
-
  else {
-
- this.nextId++;
-
+     this.nextId++;
  }
-
- return this.nextId;
-
+     return this.nextId;
  }
 
 
