@@ -26,7 +26,8 @@ select last_insert_id() from batch_job_seq;
 但是如果同一个connection下分出多个线程同时使用update+select也会导致本线程id没取到，取了其他线程生成的id。所以需要给update+select**放在一个方法中用synchronize屏蔽多线程同时用一个connection导致的问题**,参考代码：
 
 ### MySQLMaxValueIncrementer.java
-```
+
+```java
  @Override
 
  protected synchronized long getNextKey() throws DataAccessException {
@@ -116,6 +117,4 @@ select last_insert_id() from batch_job_seq;
 
 
 ```
-
-
 
